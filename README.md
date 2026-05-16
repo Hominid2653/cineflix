@@ -1,3 +1,50 @@
+# 🎬 StreamFlow (Movie Streaming Platform)
+
+A modern **movie discovery + streaming web application** built with:
+
+- Next.js (App Router)
+- Supabase (Auth, Database, Analytics)
+- TMDB API (Movies & TV data)
+- Embedded video servers (VidSrc / alternatives)
+
+---
+
+## 🚀 Live Demo
+https://your-vercel-domain.vercel.app
+
+---
+
+## 📌 Overview
+
+StreamFlow is a **MovieBox-style streaming platform** that allows users to:
+
+- Browse trending and popular movies
+- Search movies and TV shows
+- Watch content via embedded streaming servers
+- Track watch progress
+- Maintain watchlists and favorites
+- Receive personalized recommendations
+- Admins to monitor users and system activity
+
+---
+
+## 🧱 Tech Stack
+
+### Frontend
+- Next.js (App Router)
+- Tailwind CSS
+- React Components (modular architecture)
+
+### Backend
+- Supabase (PostgreSQL + Auth + Row Level Security)
+
+### External APIs
+- TMDB API (movie metadata)
+- Embedded video providers (VidSrc / alternative hosts)
+
+---
+
+## 🏗️ Architecture
 TMDB API → Next.js Server Actions → Supabase DB → UI Components
 ↓
 Embedded Video Player
