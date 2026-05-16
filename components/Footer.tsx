@@ -7,7 +7,7 @@ export function Footer() {
         <div>
           <p className="font-semibold text-white">CineFlix</p>
           <p className="max-w-xl">
-            Movie discovery, playback, watch history, and admin tooling in one focused streaming workspace.
+            Movie discovery, playback, watch history, and recommendations in one focused streaming workspace.
           </p>
         </div>
         <div className="flex flex-wrap gap-4">

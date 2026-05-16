@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { Film, LayoutDashboard, Search, Clapperboard } from "lucide-react";
+import { Film, Search, Clapperboard } from "lucide-react";
 import { Button } from "./ui/button";
 import { AuthButton } from "./auth-button";
 import { SearchBar } from "./SearchBar";
@@ -26,12 +26,6 @@ export function Navbar() {
             <Link href="/watchlist">
               <Clapperboard className="h-4 w-4" />
               Watchlist
-            </Link>
-          </Button>
-          <Button asChild variant="ghost" className="text-slate-300 hover:bg-white/5 hover:text-white">
-            <Link href="/admin">
-              <LayoutDashboard className="h-4 w-4" />
-              Admin
             </Link>
           </Button>
         </nav>
