@@ -1,4 +1,4 @@
-# 🎬 StreamFlow (Movie Streaming Platform)
+# 🎬 CineFlix (Movie Streaming Platform)
 
 A modern **movie discovery + streaming web application** built with:
 
@@ -10,13 +10,13 @@ A modern **movie discovery + streaming web application** built with:
 ---
 
 ## 🚀 Live Demo
-https://your-vercel-domain.vercel.app
+https://cineflixbay.vercel.app
 
 ---
 
 ## 📌 Overview
 
-StreamFlow is a **MovieBox-style streaming platform** that allows users to:
+CineFlix is a **MovieBox-style streaming platform** that allows users to:
 
 - Browse trending and popular movies
 - Search movies and TV shows
@@ -184,8 +184,8 @@ Admins can:
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/your-repo/streamflow
-cd streamflow
+git clone https://github.com/your-repo/CineFlix
+cd CineFlix
 2. Install dependencies
 npm install
 3. Setup environment variables
