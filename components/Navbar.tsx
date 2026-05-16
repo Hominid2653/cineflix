@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Film, LayoutDashboard, Search, Clapperboard } from "lucide-react";
 import { Button } from "./ui/button";
@@ -39,7 +40,13 @@ export function Navbar() {
         </div>
         <div className="ml-auto flex items-center gap-3">
           <div className="hidden md:block">
-            <AuthButton />
+            <Suspense
+              fallback={
+                <div className="h-9 w-40 rounded-full border border-white/10 bg-white/5" />
+              }
+            >
+              <AuthButton />
+            </Suspense>
           </div>
         </div>
       </div>
