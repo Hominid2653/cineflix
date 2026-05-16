@@ -28,17 +28,17 @@ export function SearchBar({
 
   return (
     <form onSubmit={handleSubmit} className={className}>
-      <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 p-1.5 shadow-lg shadow-black/20 backdrop-blur">
-        <div className="flex min-w-0 flex-1 items-center gap-2 px-3">
-          <Search className="h-4 w-4 shrink-0 text-slate-400" />
+      <div className="flex items-center gap-2 border border-white/10 bg-white/5 px-3 py-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <Search className="h-4 w-4 shrink-0 text-slate-500" />
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={placeholder}
-            className="h-9 border-0 bg-transparent px-0 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0"
+            className="h-8 border-0 bg-transparent px-0 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0"
           />
         </div>
-        <Button type="submit" size="sm" className="rounded-full px-4">
+        <Button type="submit" size="sm" className="px-4">
           Search
         </Button>
       </div>

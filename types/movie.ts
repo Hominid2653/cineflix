@@ -17,10 +17,14 @@ export type Movie = {
   genre_ids?: number[];
   genres?: MovieGenre[];
   runtime?: number | null;
+  episode_run_time?: number[];
+  number_of_seasons?: number;
+  number_of_episodes?: number;
   status?: string;
   tagline?: string;
   original_language?: string;
   media_type?: "movie" | "tv";
+  type?: string;
   popularity?: number;
   adult?: boolean;
 };
@@ -41,6 +45,7 @@ export type MovieCredits = {
 
 export type WatchProgress = {
   movieId: number;
+  mediaType: "movie" | "tv";
   title: string;
   posterPath?: string | null;
   backdropPath?: string | null;

@@ -10,7 +10,14 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "CineFlix",
-  description: "A modern movie discovery and streaming platform.",
+  description: "A cinematic movie discovery and streaming platform built for fast browsing, playback, and watch tracking.",
+  keywords: ["movies", "streaming", "TMDB", "watchlist", "recommendations", "CineFlix"],
+  openGraph: {
+    title: "CineFlix",
+    description: "A cinematic movie discovery and streaming platform.",
+    url: defaultUrl,
+    siteName: "CineFlix",
+  },
 };
 
 const geistSans = Geist({

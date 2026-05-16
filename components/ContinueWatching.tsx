@@ -13,21 +13,21 @@ type ContinueWatchingProps = {
 export function ContinueWatching({ items }: ContinueWatchingProps) {
   if (!items.length) {
     return (
-      <Card className="border-white/10 bg-white/5 p-6">
-        <p className="text-sm text-slate-300">Nothing in progress yet. Start a film and it will appear here.</p>
+      <Card className="border-white/10 bg-white/5 p-5">
+        <p className="text-sm text-slate-300">Nothing in progress yet.</p>
       </Card>
     );
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
       {items.map((item) => {
         const poster = posterUrl(item.posterPath);
 
         return (
           <Card key={item.movieId} className="overflow-hidden border-white/10 bg-white/5">
-            <div className="flex gap-4 p-4">
-              <div className="relative h-24 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-800">
+            <div className="flex gap-3 p-3">
+              <div className="relative h-20 w-14 shrink-0 overflow-hidden bg-slate-800">
                 {poster ? (
                   <Image src={poster} alt={item.title} fill sizes="64px" className="object-cover" />
                 ) : (
@@ -36,17 +36,17 @@ export function ContinueWatching({ items }: ContinueWatchingProps) {
                   </div>
                 )}
               </div>
-              <div className="min-w-0 flex-1 space-y-3">
+              <div className="min-w-0 flex-1 space-y-2">
                 <div>
-                  <h3 className="truncate text-sm font-semibold text-white">{item.title}</h3>
+                  <h3 className="truncate text-sm font-medium text-white">{item.title}</h3>
                   <p className="text-xs text-slate-400">{item.progress}% watched</p>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-1.5 overflow-hidden bg-white/10">
                   <div className="h-full rounded-full bg-primary" style={{ width: `${item.progress}%` }} />
                 </div>
                 <div className="flex items-center gap-2">
                   <Button asChild size="sm">
-                    <Link href={`/watch/${item.movieId}`}>
+                    <Link href={`/watch/${item.movieId}?type=${item.mediaType}`}>
                       <Play className="h-4 w-4 fill-current" />
                       Resume
                     </Link>

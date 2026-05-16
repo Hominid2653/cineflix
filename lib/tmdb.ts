@@ -2,7 +2,9 @@ import type { Movie, MovieCredits, MovieGenre } from "@/types/movie";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p";
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+const TMDB_API_KEY = process.env.TMDB_API_KEY?.trim();
+const TMDB_API_READ_ACCESS_TOKEN = process.env.TMDB_API_READ_ACCESS_TOKEN?.trim();
+const TMDB_LANGUAGE = "en-US";
 
 const fallbackGenres: MovieGenre[] = [
   { id: 28, name: "Action" },
@@ -94,11 +96,26 @@ function buildUrl(path: string, params: Record<string, string | number | undefin
   return url;
 }
 
-async function fetchTmdb<T>(path: string, params: Record<string, string | number | undefined> = {}) {
-  if (!TMDB_API_KEY) return null;
+type TmdbRequestOptions = {
+  headers?: HeadersInit;
+};
+
+async function fetchTmdb<T>(
+  path: string,
+  params: Record<string, string | number | undefined> = {},
+  options: TmdbRequestOptions = {},
+) {
+  if (!TMDB_API_KEY && !TMDB_API_READ_ACCESS_TOKEN) return null;
 
   try {
     const response = await fetch(buildUrl(path, params), {
+      headers: {
+        Accept: "application/json",
+        ...(TMDB_API_READ_ACCESS_TOKEN
+          ? { Authorization: `Bearer ${TMDB_API_READ_ACCESS_TOKEN}` }
+          : {}),
+        ...options.headers,
+      },
       next: { revalidate: 900 },
     });
 
@@ -125,30 +142,49 @@ export function profileUrl(path?: string | null) {
   return imageUrl(path, "w342");
 }
 
+export function hasTmdbConfig() {
+  return Boolean(TMDB_API_KEY || TMDB_API_READ_ACCESS_TOKEN);
+}
+
+function normalizeGenres(genres: MovieGenre[] | undefined, genreIds: number[] | undefined) {
+  if (genres?.length) return genres;
+  return (genreIds || [])
+    .map((id) => fallbackGenres.find((genre) => genre.id === id))
+    .filter(Boolean) as MovieGenre[];
+}
+
+async function tmdbList<T>(path: string, params: Record<string, string | number | undefined> = {}) {
+  const data = await fetchTmdb<{ results: T[] }>(path, {
+    language: TMDB_LANGUAGE,
+    ...params,
+  });
+  return data?.results || [];
+}
+
 export async function getTrendingMovies(mediaType: "movie" | "tv" = "movie") {
-  const data = await fetchTmdb<{ results: Movie[] }>(`/trending/${mediaType}/day`);
-  return data?.results?.length ? data.results : fallbackMovies;
+  const results = await tmdbList<Movie>(`/trending/${mediaType}/day`);
+  return results.length ? results : fallbackMovies;
 }
 
 export async function getPopularMovies(mediaType: "movie" | "tv" = "movie") {
-  const data = await fetchTmdb<{ results: Movie[] }>(`/${mediaType}/popular`);
-  return data?.results?.length ? data.results : fallbackMovies;
+  const results = await tmdbList<Movie>(`/${mediaType}/popular`);
+  return results.length ? results : fallbackMovies;
 }
 
 export async function getTopRatedMovies(mediaType: "movie" | "tv" = "movie") {
-  const data = await fetchTmdb<{ results: Movie[] }>(`/${mediaType}/top_rated`);
-  return data?.results?.length ? data.results : fallbackMovies;
+  const results = await tmdbList<Movie>(`/${mediaType}/top_rated`);
+  return results.length ? results : fallbackMovies;
 }
 
 export async function searchTitles(query: string) {
   if (!query.trim()) return fallbackMovies;
 
   const [movieResults, tvResults] = await Promise.all([
-    fetchTmdb<{ results: Movie[] }>("/search/movie", { query }),
-    fetchTmdb<{ results: Movie[] }>("/search/tv", { query }),
+    tmdbList<Movie>("/search/movie", { query }),
+    tmdbList<Movie>("/search/tv", { query }),
   ]);
 
-  const results = [...(movieResults?.results || []), ...(tvResults?.results || [])].slice(0, 20);
+  const results = [...movieResults, ...tvResults].slice(0, 20);
   return results.length ? results : fallbackMovies;
 }
 
@@ -157,25 +193,54 @@ export async function getMovieById(id: number) {
   return movie || fallbackMovies.find((item) => item.id === id) || { ...fallbackMovies[0], id };
 }
 
+export async function getTitleById(id: number, mediaType: "movie" | "tv" = "movie") {
+  const title = await fetchTmdb<Movie>(`/${mediaType}/${id}`);
+  return title || fallbackMovies.find((item) => item.id === id) || { ...fallbackMovies[0], id };
+}
+
 export async function getMovieCreditsById(id: number) {
-  const credits = await fetchTmdb<MovieCredits>(`/movie/${id}/credits`);
+  const credits = await fetchTmdb<MovieCredits>(`/movie/${id}/credits`, {
+    language: TMDB_LANGUAGE,
+  });
+  return credits || fallbackCredits;
+}
+
+export async function getTitleCreditsById(id: number, mediaType: "movie" | "tv" = "movie") {
+  const credits = await fetchTmdb<MovieCredits>(`/${mediaType}/${id}/credits`, {
+    language: TMDB_LANGUAGE,
+  });
   return credits || fallbackCredits;
 }
 
 export async function getSimilarMoviesById(id: number) {
-  const data = await fetchTmdb<{ results: Movie[] }>(`/movie/${id}/similar`);
-  return data?.results?.length ? data.results : fallbackMovies.filter((movie) => movie.id !== id);
+  const results = await tmdbList<Movie>(`/movie/${id}/similar`);
+  return results.length ? results : fallbackMovies.filter((movie) => movie.id !== id);
+}
+
+export async function getSimilarTitlesById(id: number, mediaType: "movie" | "tv" = "movie") {
+  const results = await tmdbList<Movie>(`/${mediaType}/${id}/similar`);
+  return results.length ? results : fallbackMovies.filter((movie) => movie.id !== id);
 }
 
 export async function discoverMovies(params: Record<string, string | number | undefined> = {}) {
-  const data = await fetchTmdb<{ results: Movie[] }>("/discover/movie", params);
-  return data?.results?.length ? data.results : fallbackMovies;
+  const results = await tmdbList<Movie>("/discover/movie", params);
+  return results.length ? results : fallbackMovies;
+}
+
+export async function getGenres(mediaType: "movie" | "tv" = "movie") {
+  const data = await fetchTmdb<{ genres: MovieGenre[] }>(`/genre/${mediaType}/list`, {
+    language: TMDB_LANGUAGE,
+  });
+  return data?.genres?.length ? data.genres : fallbackGenres;
+}
+
+export async function findGenreByName(name: string, mediaType: "movie" | "tv" = "movie") {
+  const genres = await getGenres(mediaType);
+  return genres.find((genre) => genre.name.toLowerCase() === name.toLowerCase());
 }
 
 export function getMovieGenres(movie: Movie) {
-  return movie.genres?.length
-    ? movie.genres
-    : (movie.genre_ids || []).map((id) => fallbackGenres.find((genre) => genre.id === id)).filter(Boolean) as MovieGenre[];
+  return normalizeGenres(movie.genres, movie.genre_ids);
 }
 
 export function getMediaTitle(movie: Movie) {
@@ -192,9 +257,10 @@ export function getVoteAverage(movie: Movie) {
 }
 
 export function getRuntime(movie: Movie) {
-  if (!movie.runtime) return "Runtime unknown";
-  const hours = Math.floor(movie.runtime / 60);
-  const minutes = movie.runtime % 60;
+  const runtime = movie.runtime ?? movie.episode_run_time?.[0];
+  if (!runtime) return "Runtime unknown";
+  const hours = Math.floor(runtime / 60);
+  const minutes = runtime % 60;
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 }
 
